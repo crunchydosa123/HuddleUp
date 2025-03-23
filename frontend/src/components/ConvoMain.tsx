@@ -1,6 +1,6 @@
 import React from 'react'
 import ChatMessageBox from './ChatMessageBox'
-import MessageCloud from './MessageCloud'
+import MessageCloud from './MessageCloudSelf'
 
 type Props = {}
 
@@ -21,6 +21,9 @@ const ConvoMain = (props: Props) => {
 
         <div className='flex flex-col justify-end h-full text-white'>
             <div className='px-3'>
+            <MessageCloud  sender={true}/>
+            <MessageCloud  sender={false}/>
+            <MessageCloud  sender={false}/>
             <MessageCloud  sender={true}/>
             </div>
             <ChatMessageBox />
