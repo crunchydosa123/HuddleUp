@@ -7,6 +7,7 @@ import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css"; 
 import { Amplify } from 'aws-amplify'
 import awsExports from './aws-exports';
+import Chatrooms from './pages/Chatrooms'
 
 Amplify.configure(awsExports);
 
@@ -40,6 +41,7 @@ function App() {
         <Route path='/' element={<Homepage />} />
         <Route path='/chat' element={<Chatpage />} />
         <Route path='/huddles' element={<Huddles />} />
+        <Route path='/rooms' element={<Chatrooms />} />
       </Routes>
     </BrowserRouter>
     </Authenticator>
