@@ -13,13 +13,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
 	UserID       string `json:"UserID"`
 	Username     string `json:"Username"`
+	Password     string `json:"Password"`
 	PasswordHash string `json:"PasswordHash"`
 	Email        string `json:"Email"`
 }
@@ -72,7 +72,7 @@ func generateJWT(user User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signedToken, err := token.SignedString(jwtSecret)
+	signedToken, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return "", err
 	}
@@ -89,7 +89,15 @@ func handleSignup(req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPRe
 		return events.APIGatewayV2HTTPResponse{StatusCode: 400, Body: `{"error":"Invalid input"}`}, nil
 	}
 
-	user.UserID = uuid.New().String()
+	user.UserID = user.Username
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Printf("Failed to hash password: %v\n", err)
+		return events.APIGatewayV2HTTPResponse{StatusCode: 500, Body: `{"error":"Internal error"}`}, nil
+	}
+
+	user.PasswordHash = string(hashedPassword)
 
 	item, err := dynamodbattribute.MarshalMap(user)
 	if err != nil {
@@ -153,7 +161,7 @@ func handleLogin(req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPRes
 	if resp.Item == nil {
 		return events.APIGatewayV2HTTPResponse{
 			StatusCode: 401,
-			Body:       `{"error":"Invalid username or password"}`,
+			Body:       `{"error":"Get item not found"}`,
 		}, nil
 	}
 
@@ -169,9 +177,10 @@ func handleLogin(req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPRes
 
 	err = bcrypt.CompareHashAndPassword([]byte(storedUser.PasswordHash), []byte(password))
 	if err != nil {
+		fmt.Printf("hashed password does not match %v\n", err)
 		return events.APIGatewayV2HTTPResponse{
 			StatusCode: 401,
-			Body:       `{"error":"Invalid username or password"}`,
+			Body:       `{"error":"hashed password does not match, "}`,
 		}, nil
 	}
 
