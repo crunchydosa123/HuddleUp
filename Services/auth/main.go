@@ -45,6 +45,9 @@ func HandleRequest(ctx context.Context, req events.APIGatewayV2HTTPRequest) (eve
 		} else if path == "/signup" {
 			return handleSignup(req)
 		}
+	case "OPTIONS":
+		return handlerOptions(req)
+
 	default:
 		return events.APIGatewayV2HTTPResponse{
 			StatusCode: 405,
@@ -90,6 +93,26 @@ func handleSignup(req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPRe
 	}
 
 	user.UserID = user.Username
+
+	getInput := &dynamodb.GetItemInput{
+		TableName: aws.String(tablename),
+		Key: map[string]*dynamodb.AttributeValue{
+			"UserID": {
+				S: aws.String(user.UserID),
+			},
+		},
+	}
+
+	result, err := db.GetItem(getInput)
+	if err != nil {
+		fmt.Printf("Failed to get item from db: %v\n", err)
+		return events.APIGatewayV2HTTPResponse{StatusCode: 500, Body: `{"error":"Internal error"}`}, nil
+	}
+
+	if result.Item != nil {
+		// User already exists
+		return events.APIGatewayV2HTTPResponse{StatusCode: 409, Body: `{"error":"Username already taken"}`}, nil
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -203,6 +226,19 @@ func handleLogin(req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPRes
 		StatusCode: 200,
 		Body:       string(respJSON),
 		Headers:    map[string]string{"Content-Type": "application/json"},
+	}, nil
+}
+
+func handlerOptions(req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+	return events.APIGatewayV2HTTPResponse{
+		StatusCode: 200,
+		Body:       "OK",
+		Headers: map[string]string{
+			"Content-Type":                 "application/json",
+			"Access-Control-Allow-Origin":  "*",
+			"Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+			"Access-Control-Allow-Headers": "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+		},
 	}, nil
 }
 

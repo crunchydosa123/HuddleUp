@@ -1,0 +1,11 @@
+{
+  "action": "sendMessage",
+  "roomId": "room5",
+  "message": "oiuhgbnjkijuh!"
+}
+
+
+{
+  "action": "joinRoom",
+  "roomId": "room1"
+}
