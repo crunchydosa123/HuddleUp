@@ -1,23 +1,23 @@
 import { BrowserRouter as Router, Routes, Route, BrowserRouter } from "react-router-dom";
-import AuthRedirect from "../components/AuthRedirect";
-import ProtectedRoute from "../components/ProtectedRoute";
-import Dashboard from "../pages/Dashboard";
-import Login from "../components/Login";
 import LoginPage from "./pages/Login/Loginpage";
 import Signuppage from "./pages/Signup/Signuppage";
 import Dashboardpage from "./pages/Dashboard/Dashboardpage";
+import { UserProvider } from "./contexts/UserContext";
+import Homepage from "./pages/Homepage/Homepage";
 
 
 function App() {
     return (
+        <UserProvider>
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<>Home</>} />
+                <Route path="/" element={<Homepage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<Signuppage />} />
                 <Route path="/dashboard" element={<Dashboardpage />} />
             </Routes>
         </BrowserRouter>
+        </UserProvider>
     );
 }
 

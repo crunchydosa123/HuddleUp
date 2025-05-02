@@ -4,11 +4,44 @@ const Signuppage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    // Add signup logic here
-    console.log('Name:', name, 'Email:', email, 'Password:', password);
+    setLoading(true);
+    setError('');
+    setSuccess(false);
+
+    const payload = {
+      Username: name,
+      Password: password,
+      Email: email
+    };
+
+    try {
+      const response = await fetch("https://jtikvcj940.execute-api.ap-south-1.amazonaws.com/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Signup failed");
+      }
+
+      setSuccess(true);
+      console.log("Signup successful");
+    } catch (err) {
+      setError(err.message);
+      console.error("Signup error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -48,13 +81,19 @@ const Signuppage = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
           >
-            Sign Up
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
+
+        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+        {success && <p className="text-green-500 text-center mt-4">Signup successful!</p>}
+
         <p className="text-center text-sm text-gray-600 mt-4">
-          Already have an account? <a href="#" className="text-blue-600 hover:underline">Login</a>
+          Already have an account?{" "}
+          <a href="#" className="text-blue-600 hover:underline">Login</a>
         </p>
       </div>
     </div>

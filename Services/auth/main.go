@@ -216,9 +216,12 @@ func handleLogin(req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPRes
 		}, nil
 	}
 
-	response := map[string]string{
-		"message": "Login successful",
-		"token":   token,
+	response := map[string]interface{}{
+		"message":  "Login successful",
+		"token":    token,
+		"UserID":   storedUser.UserID,
+		"Username": storedUser.Username,
+		"Email":    storedUser.Email,
 	}
 	respJSON, _ := json.Marshal(response)
 

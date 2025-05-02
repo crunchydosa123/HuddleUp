@@ -1,15 +1,24 @@
-import React from 'react'
+// HuddleCard.jsx
+import React from 'react';
 
-const HuddleCard = () => {
+const HuddleCard = ({ groupId, setGroupId, groupName, isActive, setGroup }) => {
   return (
-    <button className='my-1 w-full bg-orange-300 rounded-md p-2 flex flex-col justify-center'>
-            <div className='w-full flex justify-between'>
-                <div className='text-xl font-bold'>Group 1</div>
-                <div>7:23 PM</div>
-            </div>
-            <div className='text-sm text-left'>You: awedd</div>
-        </button>
-  )
-}
+    <button
+      onClick={() => {
+        setGroup(groupName);
+        setGroupId(groupId);
+      }}
+      className={`my-1 cursor-pointer rounded-md p-2 mx-2 flex flex-col justify-center ${
+        isActive ? 'bg-blue-600 text-white' : 'bg-[#292b31] text-white'
+      }`}
+    >
+      <div className='w-full flex justify-between'>
+        <div className='text-sm font-bold'>{groupName}</div>
+        <div>7:23 PM</div>
+      </div>
+      <div className='text-sm text-left'>You: awedd</div>
+    </button>
+  );
+};
 
-export default HuddleCard
+export default HuddleCard;

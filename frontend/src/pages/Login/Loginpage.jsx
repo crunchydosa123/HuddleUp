@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
+import { useUser } from '../../contexts/UserContext'; // Adjust the path as needed
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const { login } = useUser(); // ✅ use the hook
+  const navigate = useNavigate();
+  const { user } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Prepare the request body
     const requestBody = {
       Username: username,
       Password: password,
     };
 
     try {
-      // Make the POST request to the login API
       const response = await fetch('https://jtikvcj940.execute-api.ap-south-1.amazonaws.com/login', {
         method: 'POST',
         headers: {
@@ -24,17 +27,18 @@ const LoginPage = () => {
         body: JSON.stringify(requestBody),
       });
 
-      // Handle the response
       if (response.ok) {
         const data = await response.json();
-        const token = data.token;  // Assuming the JWT is returned with the key 'token'
+        console.log('Login response:', data);
 
-        // Store the token in localStorage (or HttpOnly cookies for better security)
-        localStorage.setItem('authToken', token);
+        //localStorage.setItem('authToken', data.token);
 
-        // Redirect to another page or update UI accordingly
-        console.log('Login successful!');
-        window.location.href = '/dashboard';  // Example redirection to the dashboard
+        // ✅ Set user in context
+        login(data);
+        console.log('User logged in:', user);
+
+        // ✅ Use navigation instead of full reload (if using React Router)
+        navigate('/dashboard'); // Redirect to dashboard after successful login
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Login failed');
@@ -54,7 +58,7 @@ const LoginPage = () => {
           <div>
             <label className="block mb-1 font-medium">Email</label>
             <input
-              type="text"  // Change from "username" to "text" for email input
+              type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
