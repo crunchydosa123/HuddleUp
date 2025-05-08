@@ -88,13 +88,7 @@ const Dashboardpage = () => {
           console.log("Updated messages state", updatedMessages);
           return updatedMessages;
         });
-        
-
-        console.log("Updated messages state", [...prev, {
-          senderId: data.message.userId,
-          message: data.message.message,
-          timestamp: data.message.timestamp
-        }]);
+      
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
         console.log("Received message:", event.data);
