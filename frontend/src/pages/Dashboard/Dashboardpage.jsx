@@ -80,9 +80,9 @@ const Dashboardpage = () => {
           const updatedMessages = [
             ...prev,
             {
-              senderId: data.message.userId,
-              message: data.message.message,
-              timestamp: data.message.timestamp
+              senderId: data.userId,
+              message: data.message,
+              timestamp: data.timestamp
             }
           ];
           console.log("Updated messages state", updatedMessages);
