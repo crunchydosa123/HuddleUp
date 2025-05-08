@@ -76,14 +76,19 @@ const Dashboardpage = () => {
         const data = JSON.parse(event.data); // <- Properly parse JSON
         console.log("WebSocket message received:", data);
         // Assuming the incoming message has userId, message, and timestamp
-        setMessages(prev => [
-          ...prev,
-          {
-            senderId: data.message.userId,
-            message: data.message.message,
-            timestamp: data.message.timestamp
-          }
-        ]);
+        setMessages(prev => {
+          const updatedMessages = [
+            ...prev,
+            {
+              senderId: data.message.userId,
+              message: data.message.message,
+              timestamp: data.message.timestamp
+            }
+          ];
+          console.log("Updated messages state", updatedMessages);
+          return updatedMessages;
+        });
+        
 
         console.log("Updated messages state", [...prev, {
           senderId: data.message.userId,
