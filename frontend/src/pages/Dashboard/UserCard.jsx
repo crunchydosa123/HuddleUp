@@ -26,7 +26,7 @@ const UserCard = () => {
         </div>
         <div className='flex flex-col'>
           <div>{user.Username}</div>
-          <div className='text-xs'>{user.Email}</div>
+          <div className='text-xs'>{user.Role}</div>
         </div>
       </div>
       <button

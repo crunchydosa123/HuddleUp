@@ -22,6 +22,7 @@ type User struct {
 	Password     string `json:"Password"`
 	PasswordHash string `json:"PasswordHash"`
 	Email        string `json:"Email"`
+	Role         string `json:"Role"` // <-- Added Role field
 }
 
 var db = dynamodb.New(session.Must(session.NewSession()))
@@ -69,8 +70,9 @@ func generateJWT(user User) (string, error) {
 		"UserID":   user.UserID,
 		"Username": user.Username,
 		"Email":    user.Email,
-		"exp":      time.Now().Add(24 * time.Hour).Unix(), // token expires in 24 hours
-		"iat":      time.Now().Unix(),                     // issued at
+		"Role":     user.Role, // <-- Include Role in JWT
+		"exp":      time.Now().Add(24 * time.Hour).Unix(),
+		"iat":      time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -222,6 +224,7 @@ func handleLogin(req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPRes
 		"UserID":   storedUser.UserID,
 		"Username": storedUser.Username,
 		"Email":    storedUser.Email,
+		"Role":     storedUser.Role,
 	}
 	respJSON, _ := json.Marshal(response)
 

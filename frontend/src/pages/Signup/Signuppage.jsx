@@ -4,6 +4,7 @@ const Signuppage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('User'); // default role
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -17,7 +18,8 @@ const Signuppage = () => {
     const payload = {
       Username: name,
       Password: password,
-      Email: email
+      Email: email,
+      Role: role
     };
 
     try {
@@ -78,6 +80,19 @@ const Signuppage = () => {
               required
               className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Role</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="Student">Student</option>
+              <option value="Faculty">Faculty</option>
+              <option value="Admin">Admin</option>
+            </select>
           </div>
           <button
             type="submit"

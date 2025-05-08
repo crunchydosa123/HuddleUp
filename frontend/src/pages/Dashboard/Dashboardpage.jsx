@@ -73,14 +73,17 @@ const Dashboardpage = () => {
 
     socket.onmessage = (event) => {
       try {
-        console.log(event);
-        const msg = event.data;
-        
-          setMessages(prev => [...prev, {
-            senderId: "",
-            message: msg,
-          }]);
-        
+        const data = JSON.parse(event.data); // <- Properly parse JSON
+        console.log("WebSocket message received:", data);
+        // Assuming the incoming message has userId, message, and timestamp
+        setMessages(prev => [
+          ...prev,
+          {
+            senderId: data.message.userId,
+            message: data.message.message,
+            timestamp: data.message.timestamp
+          }
+        ]);
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
         console.log("Received message:", event.data);
@@ -106,9 +109,10 @@ const Dashboardpage = () => {
       action: "sendMessage",
       roomId: selectedGroupId,
       message: newMessage,
-      senderId: user.Username,
+      UserID: user.Username,
     };
-
+    console.log("Sending message:", payload);
+    console.log("Messages:", messages);
     ws.send(JSON.stringify(payload));
 
     /*setMessages(prev => [
@@ -161,12 +165,14 @@ const Dashboardpage = () => {
               </div>
             </div>
             <div className="p-4 flex items-center">
+              {user.Role !== "Student" && (
+                
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="ml-2 p-2 bg-green-600 text-white text-xs rounded-md"
               >
                 Add Participants
-              </button>
+              </button>)}
             </div>
           </div>
 
@@ -175,11 +181,11 @@ const Dashboardpage = () => {
             <div className="messages flex flex-col space-y-3">
               {messages.map((msg, index) => (
                 <MessageBubble
-                  key={index}
-                  sender={msg.senderId === user.Username ? "You" : msg.senderId}
-                  text={msg.message}
-                  isOwnMessage={msg.senderId === user.Username}
-                />
+                key={index}
+                sender={msg.senderId === user.Username ? "You" : msg.senderId || "Unknown"}
+                text={msg.message}
+                isOwnMessage={msg.senderId === user.Username}
+              />
               ))}
             </div>
           </div>
