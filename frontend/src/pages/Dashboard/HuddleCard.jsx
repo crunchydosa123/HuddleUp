@@ -12,11 +12,9 @@ const HuddleCard = ({ groupId, setGroupId, groupName, isActive, setGroup }) => {
         isActive ? 'bg-blue-600 text-white' : 'bg-[#292b31] text-white'
       }`}
     >
-      <div className='w-full flex justify-between'>
+      <div className='w-full flex justify-start'>
         <div className='text-sm font-bold'>{groupName}</div>
-        <div>7:23 PM</div>
       </div>
-      <div className='text-sm text-left'>You: awedd</div>
     </button>
   );
 };
